@@ -9,3 +9,5 @@ python-dotenv==1.1.0
 yfinance==0.2.55
 dotenv==0.9.9
 python-dotenv==1.1.0
+statsmodels
+pandas_ta
