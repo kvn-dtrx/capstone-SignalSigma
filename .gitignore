@@ -136,4 +136,8 @@ data/
 models/
 mlruns/
 node_modules/
+**/logs/
+# lightning, darts logs
+# As soon as log directory are set, this should be removed
+**/*_logs/
 
