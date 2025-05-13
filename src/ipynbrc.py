@@ -141,34 +141,39 @@ def cartprod(*strss: List[str | List[str]]) -> str | List[str]:
 PLT_STYLE = "dark_background"
 PLT_STYLE = "fast"
 
+CUSTOM_RC_PARAMS = {
+    "axes.titleweight": "bold",
+    "axes.titlesize": 18,
+    "axes.labelsize": 12,
+    "axes.labelweight": "bold",
+    # "axes.labelcolor": "white",  # Uncomment if needed
+    "figure.dpi": 600,
+    "figure.figsize": (10, 5),
+    "savefig.format": "svg",
+    "savefig.dpi": 600,
+    "grid.color": "gray",
+    "grid.linestyle": "--",
+    "xtick.labelsize": 10,
+    "ytick.labelsize": 10,
+    "xtick.direction": "in",
+    "ytick.direction": "in",
+    "legend.loc": "upper right",
+    "legend.frameon": False,
+    "lines.linewidth": 2,
+    "lines.markersize": 8,
+}
+
+
+#
+
 try:
     plt.style.use(PLT_STYLE)
 except:
     print(f"Could not load matplotlib style {PLT_STYLE}.")
     print("Classic style will be used.")
 
-plt.rcParams["axes.titleweight"] = "bold"
-plt.rcParams["axes.titlesize"] = 18
-plt.rcParams["axes.labelsize"] = 12
-plt.rcParams["axes.labelweight"] = "bold"
-# plt.rcParams["axes.labelcolor"] = "white"
-
-plt.rcParams["figure.dpi"] = 600
-plt.rcParams["figure.figsize"] = (10, 5)
-plt.rcParams["savefig.format"] = "svg"
-plt.rcParams["savefig.dpi"] = 600
-
-plt.rcParams["grid.color"] = "gray"
-plt.rcParams["grid.linestyle"] = "--"
-plt.rcParams["xtick.labelsize"] = 10
-plt.rcParams["ytick.labelsize"] = 10
-plt.rcParams["xtick.direction"] = "in"
-plt.rcParams["ytick.direction"] = "in"
-
-plt.rcParams["legend.loc"] = "upper right"
-plt.rcParams["legend.frameon"] = False
-plt.rcParams["lines.linewidth"] = 2
-plt.rcParams["lines.markersize"] = 8
+for k, v in CUSTOM_RC_PARAMS.items():
+    plt.rcParams[k] = v
 
 
 def save_plot(

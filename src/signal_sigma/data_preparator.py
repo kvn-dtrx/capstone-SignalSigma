@@ -1,9 +1,9 @@
 import os
 import pandas as pd
 import numpy as np
-from tft_feature_engineering import FeatureEngineering
+from signal_sigma.feature_engineering import FeatureEngineering
 
-class DatasetPreparator:
+class DataPreparator:
     """
     Prepares a modeling-ready dataset for stock forecasting with technical and market-wide features.
     Includes relative investment analysis and trend tracking across stocks.
