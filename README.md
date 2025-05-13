@@ -8,58 +8,82 @@
 
 - Python 3.11.3
 - pyenv
-<!-- - Node.js -->
 
-And additionally, as usual, the modules to be installed for the virtual environment are listed in `requirements.txt`.
+## Installation
 
-## Setup Options
+1. Navigate to a working directory of your choice, then clone the repository and enter it:
+
+   ``` shell
+   git clone https://github.com/julialoeschel/capstone-SignalSigma.git &&
+       cd capstone-SignalSigma
+   ```
+
+2. Choose a setup option based on your operating system and intended use:
+
+   - `make basic-unix` / `make basic-win`: for general use or exploration (core dependencies only).
+   - `make dev-unix` / `make dev-win`: for contributors (includes development tools like linters and pre-commit hooks).
+
+   Details for each Makefile target are provided [below](#makefile-targets).
+
+3. Activate the virtual environment:
+
+   - On macOS/Linux, run:
+
+     ```shell
+     source .venv/bin/activate
+     ```
+
+   - On Windows (PowerShell), run:
+
+     ``` powershell
+     .\.venv\Scripts\Activate.ps1
+     ```
+
+## Makefile Targets
+
+**TODO:** Proof-check the Windows versions
+**TODO:** Add explanations for clearing and resetting
+
+Below, we explain what each Makefile target does. You can also run the corresponding commands manually if you prefer.
 
 ### Basic
 
-For exploring the repository, the basic installation option is the recommended choice.
+- `make basic-unix`
 
-#### Basic -- macOS/Linux
+  ```shell
+  pyenv local 3.11.3
+  python -m venv .venv
+  .venv/bin/python -m pip install --upgrade pip
+  .venv/bin/python -m pip install .
+  ```
 
-Run either `make basic-unix` or execute:
+- `make basic-win`
 
-```shell
-pyenv local 3.11.3
-python -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+  ``` powershell
+  pyenv local 3.11.3
+  python -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install --upgrade pip
+  .\.venv\Scripts\python.exe -m pip install .
+  ```
 
-#### Basic -- Windows (PowerShell)
+### Dev
 
-Run either `make basic-win` or execute:
+- `make dev-unix`
 
-```powershell
-pyenv local 3.11.3
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+  ``` shell
+  pyenv local 3.11.3
+  python -m venv .venv
+  .venv/bin/python -m pip install --upgrade pip
+  .venv/bin/python -m pip install .[dev]
+  .venv/bin/pre-commit install
+  ```
 
-### Extra
+- `make dev-win`
 
-For a smoother "committing experience" when contributing, it is recommended to install additionally the [pre-commit framework](https://pre-commit.com).
-
-#### Extra -- macOS/Linux
-
-Once the virtual environment is activated, run either `make unix-extra` or execute:
-
-```shell
-pip install pre-commit
-pre-commit install
-```
-
-#### Extra -- Windows (PowerShell)
-
-Once the virtual environment is activated, run either `make win-extra` or execute:
-
-```powershell
-pip install pre-commit
-pre-commit install
-```
+  ``` powershell
+  pyenv local 3.11.3
+  python -m venv .venv
+  .\.venv\Scripts\python.exe -m pip install --upgrade pip
+  .\.venv\Scripts\python.exe -m pip install .[dev]
+  .\.venv\Scripts\pre-commit.exe install
+  ```
