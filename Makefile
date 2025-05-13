@@ -5,7 +5,9 @@
 # Global Variables
 PYTHON_VERSION := 3.11.3
 VENV := .venv
-TARGETS := help basic-unix basic-win pre-commit-unix pre-commit-win
+TARGETS := help basic-unix basic-win dev-unix dev-win clear-unix clear-win reset-unix reset-win
+BOLD_WHITE := \033[1;37m
+RESET := \033[0m
 
 # Descriptors that should be treated as targets and not as files.
 .PHONY: $(TARGETS)
@@ -14,34 +16,65 @@ TARGETS := help basic-unix basic-win pre-commit-unix pre-commit-win
 
 help:
 	@echo
-	@echo "  ⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡"
-	@echo "  ⟡ Σιγναλ Σιγμα ⟡"
-	@echo "  ⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡"
+	@echo "    $(BOLD_WHITE)⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡$(RESET)"
+	@echo "    $(BOLD_WHITE)⟡ Σιγναλ Σιγμα ⟡$(RESET)"
+	@echo "    $(BOLD_WHITE)⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡$(RESET)"
 	@echo
-	@echo "  Install options:"
-	@echo "  ⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡"
+	@echo "    $(BOLD_WHITE)Install options:$(RESET)"
+	@echo "    $(BOLD_WHITE)⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡⟡$(RESET)"
+	@echo
 	@echo "    make basic-unix      - Set up virtual environment and dependencies on macOS/Linux"
 	@echo "    make basic-win       - Set up virtual environment and dependencies on Windows (PowerShell)"
-	@echo "    make pre-commit-unix - Set up pre-commit hooks on macOS/Linux"
-	@echo "    make pre-commit-win  - Set up pre-commit hooks on Windows (PowerShell)"
+	@echo "    make dev-unix        - Set up development environment and pre-commit hooks on macOS/Linux"
+	@echo "    make dev-win         - Set up development environment and pre-commit hooks on Windows (PowerShell)"
+	@echo "    make clear-unix      - Clear directories with build results on macOS/Linux"
+	@echo "    make clear-win       - Clear directories with build results on Windows (PowerShell)"
+	@echo "    make reset-unix      - Clear as before and remove virtual environment on macOS/Linux"
+	@echo "    make reset-win       - Clear as before and remove virtual environment on Windows"
 	@echo
 
 basic-unix:
 	pyenv local $(PYTHON_VERSION)
 	python -m venv $(VENV)
 	$(VENV)/bin/python -m pip install --upgrade pip
-	$(VENV)/bin/python -m pip install -r requirements.txt
+	$(VENV)/bin/python -m pip install -e .
 
 basic-win:
 	pyenv local $(PYTHON_VERSION)
 	python -m venv $(VENV)
 	.\$(VENV)\Scripts\python.exe -m pip install --upgrade pip
-	.\$(VENV)\Scripts\python.exe -m pip install -r requirements.txt
+	.\$(VENV)\Scripts\python.exe -m pip install -e .
 
-pre-commit-unix:
-	pip install pre-commit
-	pre-commit install
+dev-unix:
+	pyenv local $(PYTHON_VERSION)
+	python -m venv $(VENV)
+	$(VENV)/bin/python -m pip install --upgrade pip
+	$(VENV)/bin/python -m pip install -e .[dev]
+	$(VENV)/bin/pre-commit install
 
-pre-commit-win:
-	pip install pre-commit
-	pre-commit install
+dev-win:
+	pyenv local $(PYTHON_VERSION)
+	python -m venv $(VENV)
+	.\$(VENV)\Scripts\python.exe -m pip install --upgrade pip
+	.\$(VENV)\Scripts\python.exe -m pip install -e .[dev]
+	.\$(VENV)\Scripts\pre-commit.exe install
+
+clear-unix:
+	find data -mindepth 1 ! -name '.gitkeep' -delete
+	find logs -mindepth 1 ! -name '.gitkeep' -delete
+	find plots -mindepth 1 ! -name '.gitkeep' -delete
+
+clear-win:
+	if exist data (for %%f in (data\*) do if /I not "%%~nxf"==".gitkeep" del "%%f")
+	if exist logs (for %%f in (logs\*) do if /I not "%%~nxf"==".gitkeep" del "%%f")
+	if exist plots (for %%f in (plots\*) do if /I not "%%~nxf"==".gitkeep" del "%%f")
+
+reset-unix:
+	$(MAKE) clear-unix
+	rm -rf $(VENV)
+	pyenv local --unset
+
+reset-win:
+	$(MAKE) clear-win
+	if exist $(VENV) rmdir /s /q $(VENV)
+	pyenv local --unset

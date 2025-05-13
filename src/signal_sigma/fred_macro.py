@@ -42,7 +42,7 @@ class FredMacroProcessor:
             "10y_treasury_yield": "DGS10",
             "industrial_production": "INDPRO",
             "real_personal_income": "W875RX1",
-            "initial_jobless_claims": "ICSA"
+            "initial_jobless_claims": "ICSA",
         }
 
     def fetch_data(self) -> pd.DataFrame:
@@ -91,39 +91,43 @@ class FredMacroProcessor:
 
         # Re-scale the added inverse columns
         scaler = StandardScaler()
-        df[["inv_unemployment", "inv_claims"]] = scaler.fit_transform(df[["inv_unemployment", "inv_claims"]])
+        df[["inv_unemployment", "inv_claims"]] = scaler.fit_transform(
+            df[["inv_unemployment", "inv_claims"]]
+        )
 
         # 🔵 1. Inflation & Monetary Pressure
         df["FRED_inflation_monetary_pressure"] = (
-            0.25 * df["cpi"] +
-            0.20 * df["core_cpi"] +
-            0.15 * df["pce"] +
-            0.15 * df["core_pce"] +
-            0.15 * df["fed_funds_rate"] +
-            0.10 * df["10y_treasury_yield"]
+            0.25 * df["cpi"]
+            + 0.20 * df["core_cpi"]
+            + 0.15 * df["pce"]
+            + 0.15 * df["core_pce"]
+            + 0.15 * df["fed_funds_rate"]
+            + 0.10 * df["10y_treasury_yield"]
         )
 
         # 🟢 2. Labor & Economic Activity
         df["FRED_labor_econ_activity"] = (
-            0.35 * df["nonfarm_payrolls"] +
-            0.25 * df["inv_unemployment"] +
-            0.20 * df["inv_claims"] +
-            0.20 * df["industrial_production"]
+            0.35 * df["nonfarm_payrolls"]
+            + 0.25 * df["inv_unemployment"]
+            + 0.20 * df["inv_claims"]
+            + 0.20 * df["industrial_production"]
         )
 
         # 🟡 3. Consumer Sentiment & Spending
         df["FRED_consumer_spending_sentiment"] = (
-            0.35 * df["retail_sales"] +
-            0.25 * df["real_personal_income"] +
-            0.25 * df["consumer_sentiment"] +
-            0.15 * df["housing_starts"]
+            0.35 * df["retail_sales"]
+            + 0.25 * df["real_personal_income"]
+            + 0.25 * df["consumer_sentiment"]
+            + 0.15 * df["housing_starts"]
         )
 
-        return df[[
-            "FRED_inflation_monetary_pressure",
-            "FRED_labor_econ_activity",
-            "FRED_consumer_spending_sentiment"
-        ]]
+        return df[
+            [
+                "FRED_inflation_monetary_pressure",
+                "FRED_labor_econ_activity",
+                "FRED_consumer_spending_sentiment",
+            ]
+        ]
 
     def run_pipeline(self) -> pd.DataFrame:
         """
@@ -135,6 +139,8 @@ class FredMacroProcessor:
         composite_df = self.create_composites(scaled_input)
 
         composite_df.to_csv(f"{self.save_path}/fred_macro_composites.csv")
-        print(f"\n✅ Saved scaled macro composite features to {self.save_path}/fred_macro_composites.csv")
+        print(
+            f"\n✅ Saved scaled macro composite features to {self.save_path}/fred_macro_composites.csv"
+        )
 
         return composite_df

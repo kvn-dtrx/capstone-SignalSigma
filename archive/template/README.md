@@ -2,7 +2,8 @@
 
 Here you find a Skeleton project for building a simple model in a python script or notebook and log the results on MLFlow.
 
-There are two ways to do it: 
+There are two ways to do it:
+
 * In Jupyter Notebooks:
     We train a simple model in the [jupyter notebook](notebooks/EDA-and-modeling.ipynb), where we select only some features and do minimal cleaning. The hyperparameters of feature engineering and modeling will be logged with MLflow
 
@@ -11,9 +12,9 @@ There are two ways to do it:
 
 Data used is the [coffee quality dataset](https://github.com/jldbc/coffee-quality-database).
 
-## Requirements:
+## Requirements
 
-- pyenv with Python: 3.11.3
+* pyenv with Python: 3.11.3
 
 ### Setup
 
@@ -105,8 +106,8 @@ If you are doing CV you can set the tracking as nested.
 
 There is no constraint between runs to have the same metadata tracked. I.e. for one run you can track different tags, different metrics, and different parameters (in cv some parameters might not exist for some runs so this .. makes sense to be flexible).
 
-- tags can be anything you want.. like if you do CV you might want to tag the best model as "best"
-- params are perfect for hypermeters and also for information about the data pipeline you use, if you scaling vs normalization and so on
-- metrics.. should be numeric values as these can get plotted
+* tags can be anything you want.. like if you do CV you might want to tag the best model as "best"
+* params are perfect for hyperparameters and also for information about the data pipeline you use, if you scaling vs normalization and so on
+* metrics.. should be numeric values as these can get plotted
 
 ![mlflow metadata](images/3_metadata.png)

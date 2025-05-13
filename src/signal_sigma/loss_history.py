@@ -1,5 +1,6 @@
 from pytorch_lightning.callbacks import Callback
 
+
 class LossHistory(Callback):
     def __init__(self):
         self.epochs = []

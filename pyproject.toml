@@ -1,0 +1,104 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "signal-sigma"
+version = "0.1.0"
+description = "Prediction of Stock Market Prices Using TFT"
+authors = [
+  { name = "julialoeschel" },
+  { name = "payamoghtanem" },
+  { name = "Benas67" },
+  { name = "kvn.dtrx" },
+]
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+dependencies = [
+  # A python library for easy manipulation and forecasting of time series.
+  "darts==0.35.0",
+  # Python API for Federal Reserve Economic Data (FRED) from St. Louis Fed
+  "fredapi==0.5.2",
+  # Open World Holidays Framework
+  "holidays==0.71",
+  # Backport of importlib.import_module() from Python 2.7
+  "importlib==1.0.4",
+  # IPython Kernel for Jupyter
+  "ipykernel==6.29.5",
+  # Jupyter metapackage. Install all the Jupyter components in one go.
+  "jupyter=1.1.1",
+  # Multi-backend Keras
+  "keras==3.9.2",
+  # Python plotting package
+  "matplotlib==3.7.1",
+  # Missing data visualization module for Python.
+  "missingno==0.5.2",
+  # Fundamental package for array computing in Python
+  # "numpy==1.24.3",
+  # "numpy==1.23.5",
+  "numpy==1.26.0",
+  # Powerful data structures for data analysis, time series, and statistics
+  "pandas==2.1",
+  # "pandas==2.0.1",
+  # Market and exchange trading calendars for pandas
+  "pandas_market_calendars==5.1.0",
+  # An easy to use Python 3 Pandas Extension with 130+ Technical Analysis Indicators. Can be called from a Pandas DataFrame or standalone like TA-Lib. Correlation tested with TA-Lib.
+  "pandas_ta==0.3.14b0",
+  # Read key-value pairs from a .env file and set them as environment variables
+  "python-dotenv==1.1.0",
+  # A set of python modules for machine learning and data mining
+  "scikit-learn==1.6.0",
+  # "scikit-learn==1.2.2",
+  # Statistical computations and models for Python
+  "statsmodels==0.14.0",
+  # Pretty-print tabular data
+  "tabulate==0.9.0",
+  # TensorFlow is an open source machine learning framework for everyone
+  "tensorflow==2.19.0",
+  # Download market data from Yahoo! Finance API
+  # NOTE: If you run into issues with yfinance, try alternative version
+  "yfinance==0.2.58",
+] # NOTE: Installation process still relies on the requirements.txt file.
+
+[project.optional-dependencies]
+dev = [
+  # The uncompromising code formatter.
+  "black==25.1.0",
+  # the modular source code checker: pep8 pyflakes and co
+  "flake8=7.2.0",
+  # A framework for managing and maintaining multi-language pre-commit hooks.
+  "pre-commit==4.2.0",
+  # pytest: simple powerful testing with Python
+  "pytest==8.3.5",
+  # CommonMark compliant Markdown formatter
+  "mdformat==0.7.22",
+]
+
+[project.urls]
+# "Homepage" = "https://example.com"
+"Source" = "https://github.com/julialoeschel/capstone-SignalSigma"
+"Bug Tracker" = "https://github.com/julialoeschel/capstone-SignalSigma/issues"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# # Matches your Python package folder(s)
+# include = ["your_project_name*"]
+
+[tool.isort]
+profile = "black"
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]
+
+# [tool.pytest.ini_options]
+# minversion = "6.0"
+# addopts = "-ra -q"
+# testpaths = ["tests"]
+
+[tool.jupyter]
+kernel_display_name = "Python (Signal Sigma)"

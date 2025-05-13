@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
+
 class MarketMacroCompressor:
     """
     🧠 MarketMacroCompressor - A class to fetch, normalize, and compress macro-market indicators
@@ -21,36 +22,30 @@ class MarketMacroCompressor:
         self.end = end or pd.Timestamp.today().strftime("%Y-%m-%d")
         self.indicator_symbols = {
             # 🔹 Equity Indices
-            "^GSPC": "sp500",        # Broad market (sentiment baseline)
-            "^DJI": "dowjones",      # Industrial-heavy U.S. large caps
-            "^IXIC": "nasdaq",       # Tech/growth-heavy index
-
+            "^GSPC": "sp500",  # Broad market (sentiment baseline)
+            "^DJI": "dowjones",  # Industrial-heavy U.S. large caps
+            "^IXIC": "nasdaq",  # Tech/growth-heavy index
             # 🔹 Volatility (Risk Appetite)
-            "^VIX": "vix",           # Market fear index
-
+            "^VIX": "vix",  # Market fear index
             # 🔹 Interest Rates
-            "^TNX": "10y_yield",     # Benchmark long-term rate
-            "^IRX": "3mo_yield",     # Short-term rate (Fed influenced)
-
+            "^TNX": "10y_yield",  # Benchmark long-term rate
+            "^IRX": "3mo_yield",  # Short-term rate (Fed influenced)
             # 🔹 Commodities
-            "GC=F": "gold",          # Inflation hedge / risk-off asset
-            "CL=F": "oil",           # Global demand & inflation driver
-
+            "GC=F": "gold",  # Inflation hedge / risk-off asset
+            "CL=F": "oil",  # Global demand & inflation driver
             # 🔹 Currency Strength
-            "DX-Y.NYB": "dxy",       # Dollar Index
-
+            "DX-Y.NYB": "dxy",  # Dollar Index
             # 🔹 ETFs (Market segments)
-            "QQQ": "qqq",            # Tech exposure
-            "XLK": "tech_etf",       # Broader technology sector
+            "QQQ": "qqq",  # Tech exposure
+            "XLK": "tech_etf",  # Broader technology sector
             "XLF": "financial_etf",  # Interest-sensitive stocks
-            "XLE": "energy_etf",     # Energy inflation proxy
-            "ARKK": "arkk",          # Speculative/growth
-            "TLT": "longbond_etf",   # Long-term treasury bond
-            "BND": "bond_market_etf",# Total bond market
-
+            "XLE": "energy_etf",  # Energy inflation proxy
+            "ARKK": "arkk",  # Speculative/growth
+            "TLT": "longbond_etf",  # Long-term treasury bond
+            "BND": "bond_market_etf",  # Total bond market
             # 🔹 Cryptocurrencies (speculative innovation)
             "BTC-USD": "bitcoin",
-            "ETH-USD": "ethereum"
+            "ETH-USD": "ethereum",
         }
 
     def fetch_data(self):
@@ -58,7 +53,9 @@ class MarketMacroCompressor:
         📡 Download daily closing prices for all macro indicators.
         """
         print("📥 Fetching macro indicators from Yahoo Finance...")
-        data = yf.download(list(self.indicator_symbols.keys()), start=self.start, end=self.end)["Close"]
+        data = yf.download(
+            list(self.indicator_symbols.keys()), start=self.start, end=self.end
+        )["Close"]
         data.rename(columns=self.indicator_symbols, inplace=True)
         return data
 
@@ -70,7 +67,9 @@ class MarketMacroCompressor:
         print("🧪 Preprocessing: Filling missing values...")
         df = df.ffill().bfill()
         scaler = StandardScaler()
-        df_scaled = pd.DataFrame(scaler.fit_transform(df), index=df.index, columns=df.columns)
+        df_scaled = pd.DataFrame(
+            scaler.fit_transform(df), index=df.index, columns=df.columns
+        )
         return df_scaled
 
     def create_composite_features(self, df_scaled):
@@ -89,10 +88,10 @@ class MarketMacroCompressor:
         # Higher values => higher risk aversion and economic stress.
         # -----------------------------------
         df_scaled["Yahoo_mcro_market_stress"] = (
-            0.35 * df_scaled["vix"] +               # fear index
-            0.25 * df_scaled["10y_yield"] +         # long-term rate
-            0.20 * df_scaled["3mo_yield"] +         # short-term monetary policy signal
-            0.20 * df_scaled["dxy"]                 # strong dollar = tight global liquidity
+            0.35 * df_scaled["vix"]  # fear index
+            + 0.25 * df_scaled["10y_yield"]  # long-term rate
+            + 0.20 * df_scaled["3mo_yield"]  # short-term monetary policy signal
+            + 0.20 * df_scaled["dxy"]  # strong dollar = tight global liquidity
         )
 
         # -----------------------------------
@@ -101,11 +100,11 @@ class MarketMacroCompressor:
         # Higher values => bullish tech/speculative appetite.
         # -----------------------------------
         df_scaled["Yahoo_mcro_growth_innovation_sentiment"] = (
-            0.30 * df_scaled["nasdaq"] +            # growth-heavy index
-            0.25 * df_scaled["qqq"] +               # tech ETF
-            0.20 * df_scaled["bitcoin"] +           # risk-on/speculative barometer
-            0.15 * df_scaled["arkk"] +              # highly speculative
-            0.10 * df_scaled["tech_etf"]            # broad tech optimism
+            0.30 * df_scaled["nasdaq"]  # growth-heavy index
+            + 0.25 * df_scaled["qqq"]  # tech ETF
+            + 0.20 * df_scaled["bitcoin"]  # risk-on/speculative barometer
+            + 0.15 * df_scaled["arkk"]  # highly speculative
+            + 0.10 * df_scaled["tech_etf"]  # broad tech optimism
         )
 
         # -----------------------------------
@@ -114,18 +113,20 @@ class MarketMacroCompressor:
         # Higher values => investor preference for real/physical assets.
         # -----------------------------------
         df_scaled["Yahoo_mcro_real_asset_confidence"] = (
-            0.30 * df_scaled["oil"] +               # inflation / demand proxy
-            0.25 * df_scaled["gold"] +              # inflation + safe haven
-            0.20 * df_scaled["energy_etf"] +        # commodity earnings exposure
-            0.15 * df_scaled["longbond_etf"] +      # rate hedging
-            0.10 * df_scaled["bond_market_etf"]     # broad fixed income
+            0.30 * df_scaled["oil"]  # inflation / demand proxy
+            + 0.25 * df_scaled["gold"]  # inflation + safe haven
+            + 0.20 * df_scaled["energy_etf"]  # commodity earnings exposure
+            + 0.15 * df_scaled["longbond_etf"]  # rate hedging
+            + 0.10 * df_scaled["bond_market_etf"]  # broad fixed income
         )
 
-        return df_scaled[[
-            "Yahoo_mcro_market_stress",
-            "Yahoo_mcro_growth_innovation_sentiment",
-            "Yahoo_mcro_real_asset_confidence"
-        ]]
+        return df_scaled[
+            [
+                "Yahoo_mcro_market_stress",
+                "Yahoo_mcro_growth_innovation_sentiment",
+                "Yahoo_mcro_real_asset_confidence",
+            ]
+        ]
 
     def generate_macro_features(self):
         """
