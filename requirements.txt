@@ -1,3 +1,6 @@
+# A python library for easy manipulation and forecasting of time series.
+darts==0.35.0
+
 # Python API for Federal Reserve Economic Data (FRED) from St. Louis Fed
 fredapi==0.5.2
 
@@ -10,6 +13,9 @@ importlib==1.0.4
 # IPython Kernel for Jupyter
 ipykernel==6.29.5
 
+# Jupyter metapackage. Install all the Jupyter components in one go.
+jupyter==1.1.1
+
 # Multi-backend Keras
 keras==3.9.2
 
@@ -20,12 +26,16 @@ matplotlib==3.7.1
 missingno==0.5.2
 
 # Fundamental package for array computing in Python
+numpy==1.26.0
 # numpy==1.24.3
 # numpy==1.23.5
-numpy==1.26.0
 
 # Powerful data structures for data analysis, time series, and statistics
-pandas==2.0.1
+pandas==2.2.3
+# pandas==2.0.1
+
+# Market and exchange trading calendars for pandas
+pandas_market_calendars==5.1.0
 
 # An easy to use Python 3 Pandas Extension with 130+ Technical Analysis Indicators. Can be called from a Pandas DataFrame or standalone like TA-Lib. Correlation tested with TA-Lib.
 pandas_ta==0.3.14b0
@@ -34,7 +44,8 @@ pandas_ta==0.3.14b0
 python-dotenv==1.1.0
 
 # A set of python modules for machine learning and data mining
-scikit-learn==1.2.2
+scikit-learn==1.6.0
+# scikit-learn==1.2.2
 
 # Statistical computations and models for Python
 statsmodels==0.14.0

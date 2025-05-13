@@ -8,10 +8,10 @@
 # Then, run the following commands:
 # ``` shell
 # git filter-repo --invert-paths --paths-from-file .pubignore 
-# git filter-repo --invert-paths --path .pubignore 
 # ```
 # As this command is destructive, it is recommended to create 
-# a backup of the repository before running it.
+# a backup of the repository before running it!
 
 drafts/
 archive/
+.pubignore
