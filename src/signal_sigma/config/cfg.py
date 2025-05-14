@@ -99,7 +99,8 @@ MACROS = {
     "XRP-USD": "XRP",
 }
 
-MACRO_TICKERS = list(MACROS.keys())
+# MACRO_TICKERS = list(MACROS.keys())
+MACRO_TICKERS = MACROS
 
 MACROS_ALT = {
     # 🔹 Equity Indices

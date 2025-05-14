@@ -1,34 +1,47 @@
-# ---
-# description: Provides a feature selection utility for stock forecasting.
-# ---
-
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-
+from sklearn.preprocessing import StandardScaler
 from sklearn.feature_selection import mutual_info_regression
-from sklearn.linear_model import LinearRegression, LassoCV
-from sklearn.tree import DecisionTreeRegressor
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
     mean_absolute_error,
     mean_squared_error,
     r2_score,
     mean_absolute_percentage_error,
 )
-from sklearn.inspection import permutation_importance
 from xgboost import XGBRegressor
 
 
 class ReducedFeatureSelector:
-    def __init__(self, data: pd.DataFrame, target_col: str, top_n: int = 15):
+    def __init__(
+        self,
+        data: pd.DataFrame,
+        target_col: str,
+        top_n: int = 15,
+        stock_name: str = "UNKNOWN",
+    ):
         self.df = data.dropna().copy()
         self.target_col = target_col
         self.top_n = top_n
-        self.X = self.df.drop(columns=[self.target_col])
+        self.stock_name = stock_name
+        self.X_raw = self.df.drop(columns=[self.target_col])
         self.y = self.df[self.target_col]
+        self.feature_weights = {}
+        self.model_weights = {
+            "Pearson": 0.15,
+            "MutualInfo": 0.15,
+            "XGBoost": 0.40,
+            "RandomForest": 0.30,
+        }
+        self.scaler_full = StandardScaler()
+        self.X_scaled_full = pd.DataFrame(
+            self.scaler_full.fit_transform(self.X_raw),
+            columns=self.X_raw.columns,
+            index=self.X_raw.index,
+        )
 
     def calculate_metrics(self, y_true, y_pred):
         return {
@@ -36,102 +49,96 @@ class ReducedFeatureSelector:
             "RMSE": np.sqrt(mean_squared_error(y_true, y_pred)),
             "R2": r2_score(y_true, y_pred),
             "MAPE": mean_absolute_percentage_error(y_true, y_pred),
-            "MSE": mean_squared_error(y_true, y_pred),
         }
 
-    def plot_importances(self, importances, title):
+    def plot_importances(self, importances: pd.Series, title: str):
         top_features = importances.sort_values(ascending=False).head(self.top_n)
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 3))
         sns.barplot(x=top_features.values, y=top_features.index)
-        plt.title(f"{title} (Top {self.top_n})")
+        plt.title(f"{self.stock_name} - {title} (Top {self.top_n})")
         plt.tight_layout()
         plt.show()
 
+    def add_weighted_scores(self, importances: pd.Series, model_name: str):
+        norm = (importances - importances.min()) / (
+            importances.max() - importances.min() + 1e-9
+        )
+        weighted_scores = norm * self.model_weights[model_name]
+        for feature, score in weighted_scores.items():
+            self.feature_weights[feature] = self.feature_weights.get(feature, 0) + score
+        return importances
+
     def select_features(self):
         metrics_dict = {}
-        all_top_features = []
-
         # --- Pearson Correlation ---
-        corr = self.X.corrwith(self.y).abs()
-        top_corr = corr.sort_values(ascending=False).head(self.top_n)
-        self.plot_importances(top_corr, "Pearson Correlation")
-        all_top_features.extend(top_corr.index.tolist())
-
+        pearson = (
+            self.X_scaled_full.corrwith(self.y)
+            .abs()
+            .sort_values(ascending=False)
+            .head(self.top_n)
+        )
+        self.plot_importances(pearson, "Pearson Correlation")
+        self.add_weighted_scores(pearson, "Pearson")
         # --- Mutual Information ---
-        mi = mutual_info_regression(self.X, self.y, random_state=42)
-        mi_series = pd.Series(mi, index=self.X.columns).sort_values(ascending=False)
+        mi = mutual_info_regression(self.X_scaled_full, self.y, random_state=42)
+        mi_series = (
+            pd.Series(mi, index=self.X_scaled_full.columns)
+            .sort_values(ascending=False)
+            .head(self.top_n)
+        )
         self.plot_importances(mi_series, "Mutual Information")
-        all_top_features.extend(mi_series.head(self.top_n).index.tolist())
-
+        self.add_weighted_scores(mi_series, "MutualInfo")
+        # --- Train/Test Split ---
+        X_train_raw, X_test_raw, y_train, y_test = train_test_split(
+            self.X_raw, self.y, test_size=0.1, random_state=42
+        )
+        scaler = StandardScaler()
+        X_train = pd.DataFrame(
+            scaler.fit_transform(X_train_raw),
+            columns=X_train_raw.columns,
+            index=X_train_raw.index,
+        )
+        X_test = pd.DataFrame(
+            scaler.transform(X_test_raw),
+            columns=X_test_raw.columns,
+            index=X_test_raw.index,
+        )
         # --- XGBoost ---
         xgb = XGBRegressor(n_estimators=300, random_state=42)
-        xgb.fit(self.X, self.y)
-        xgb_importances = pd.Series(xgb.feature_importances_, index=self.X.columns)
-        self.plot_importances(xgb_importances, "XGBoost Feature Importance")
-        metrics_dict["XGBoost"] = self.calculate_metrics(self.y, xgb.predict(self.X))
-        all_top_features.extend(xgb_importances.nlargest(self.top_n).index.tolist())
-
-        # --- Decision Tree ---
-        dt = DecisionTreeRegressor(max_depth=5, random_state=42)
-        dt.fit(self.X, self.y)
-        dt_importances = pd.Series(dt.feature_importances_, index=self.X.columns)
-        self.plot_importances(dt_importances, "Decision Tree Feature Importance")
-        metrics_dict["Decision Tree"] = self.calculate_metrics(
-            self.y, dt.predict(self.X)
+        xgb.fit(X_train, y_train)
+        xgb_importance = (
+            pd.Series(xgb.feature_importances_, index=X_train.columns)
+            .sort_values(ascending=False)
+            .head(self.top_n)
         )
-        all_top_features.extend(dt_importances.nlargest(self.top_n).index.tolist())
-
+        self.plot_importances(xgb_importance, "XGBoost Importance")
+        self.add_weighted_scores(xgb_importance, "XGBoost")
+        metrics_dict["XGBoost"] = self.calculate_metrics(y_test, xgb.predict(X_test))
         # --- Random Forest ---
         rf = RandomForestRegressor(n_estimators=300, random_state=42)
-        rf.fit(self.X, self.y)
-        rf_importances = pd.Series(rf.feature_importances_, index=self.X.columns)
-        self.plot_importances(rf_importances, "Random Forest Feature Importance")
-        metrics_dict["Random Forest"] = self.calculate_metrics(
-            self.y, rf.predict(self.X)
+        rf.fit(X_train, y_train)
+        rf_importance = (
+            pd.Series(rf.feature_importances_, index=X_train.columns)
+            .sort_values(ascending=False)
+            .head(self.top_n)
         )
-        all_top_features.extend(rf_importances.nlargest(self.top_n).index.tolist())
-
-        # --- Linear Regression ---
-        lr = LinearRegression()
-        lr.fit(self.X, self.y)
-        lr_coef = pd.Series(np.abs(lr.coef_), index=self.X.columns).sort_values(
-            ascending=False
+        self.plot_importances(rf_importance, "Random Forest Importance")
+        self.add_weighted_scores(rf_importance, "RandomForest")
+        metrics_dict["RandomForest"] = self.calculate_metrics(
+            y_test, rf.predict(X_test)
         )
-        self.plot_importances(lr_coef, "Linear Regression Coefficients")
-        metrics_dict["Linear Regression"] = self.calculate_metrics(
-            self.y, lr.predict(self.X)
+        # --- Final Weighted Voting Result ---
+        weighted_feature_df = pd.DataFrame.from_dict(
+            self.feature_weights, orient="index", columns=["WeightedScore"]
         )
-        all_top_features.extend(lr_coef.head(self.top_n).index.tolist())
-
-        # --- Lasso Regression ---
-        lasso = LassoCV(cv=5)
-        lasso.fit(self.X, self.y)
-        lasso_coef = pd.Series(np.abs(lasso.coef_), index=self.X.columns).sort_values(
-            ascending=False
+        weighted_feature_df = weighted_feature_df.sort_values(
+            "WeightedScore", ascending=False
         )
-        self.plot_importances(lasso_coef, "Lasso Regression Coefficients")
-        metrics_dict["Lasso"] = self.calculate_metrics(self.y, lasso.predict(self.X))
-        all_top_features.extend(lasso_coef.head(self.top_n).index.tolist())
-
-        # --- Permutation Importance ---
-        perm = permutation_importance(rf, self.X, self.y, n_repeats=10, random_state=42)
-        perm_importance = pd.Series(
-            perm.importances_mean, index=self.X.columns
-        ).sort_values(ascending=False)
-        self.plot_importances(perm_importance, "Permutation Importance")
-        all_top_features.extend(perm_importance.head(self.top_n).index.tolist())
-
-        # ✅ Deduplicate features while preserving order
-        seen = set()
-        final_features = [f for f in all_top_features if not (f in seen or seen.add(f))]
-
         print(
-            f"\n✅ Final Selected Features (Deduplicated from all models): {len(final_features)}"
+            "\n:white_tick: Final Weighted Feature Importance (Merged from All Methods):"
         )
-        print(final_features)
-
-        print("\n📊 Performance Metrics by Model:")
+        print(weighted_feature_df.head(self.top_n))
+        print("\n:bar_chart: Model Performance on Test Set:")
         for name, metrics in metrics_dict.items():
-            print(f"{name}: {metrics}")
-
-        return final_features, metrics_dict
+            print(f"{name} Metrics: {metrics}")
+        return weighted_feature_df, metrics_dict
