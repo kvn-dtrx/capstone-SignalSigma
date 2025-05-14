@@ -1,3 +1,8 @@
+# ---
+# description: Provides a feature selection utility for stock forecasting.
+# ---
+
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
