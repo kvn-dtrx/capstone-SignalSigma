@@ -541,3 +541,218 @@ plt.show()
 
 
 
+import matplotlib.pyplot as plt
+from pandas import Timestamp
+
+# === Step 1: Set start of plot range for history context ===
+plot_start = Timestamp("2025-01-01")
+raw_target_slice = raw_target.slice(plot_start, raw_target.end_time())
+full_target_index = raw_target_slice.time_index
+full_target_vals = raw_target_slice.values().squeeze()
+
+# === Step 2: Extract forecast and truth values from forecast_df ===
+forecast_index = forecast_df.index
+y_true = forecast_df["true"].astype(float).values
+y_p10 = forecast_df["p10"].astype(float).values
+y_p50 = forecast_df["p50"].astype(float).values
+y_p90 = forecast_df["p90"].astype(float).values
+y_point = forecast_df["point_forecast"].astype(float).values
+
+# === Step 3: Define split markers ===
+train_end = train_target_raw.end_time()
+val_end = val_target_raw.end_time()
+test_start = forecast_index[0]
+
+# === Step 4: Begin plot ===
+fig, ax = plt.subplots(figsize=(14, 7))
+
+# Plot full historical target
+ax.plot(full_target_index, full_target_vals, label="Historical Target", color="black", linewidth=2)
+
+# Plot true values in test set
+ax.plot(forecast_index, y_true, label="True (Test)", color="blue", linewidth=2)
+
+# Plot forecasts
+ax.plot(forecast_index, y_p50, label="Forecast Median (p50)", color="magenta", linewidth=2)
+ax.plot(forecast_index, y_p10, label="Forecast Lower (p10)", linestyle="--", color="skyblue")
+ax.plot(forecast_index, y_p90, label="Forecast Upper (p90)", linestyle="--", color="green")
+ax.plot(forecast_index, y_point, label="Forecast Point", linestyle=":", color="orange")
+
+# Confidence interval shading
+ax.fill_between(forecast_index, y_p10, y_p90, color="lightgray", alpha=0.4, label="Confidence Interval (p10–p90)")
+
+# Add vertical markers
+ax.axvline(train_end, color="gray", linestyle="--", linewidth=1.5, label="Train End")
+ax.axvline(val_end, color="purple", linestyle="--", linewidth=1.5, label="Validation End")
+ax.axvline(test_start, color="red", linestyle="--", linewidth=2, label="Forecast Start")
+
+# === Annotations for Min/Max in Test Predictions ===
+min_val = y_true.min()
+min_idx = forecast_index[y_true.argmin()]
+ax.annotate(f"Min: {min_val:.2f}", xy=(min_idx, min_val), xytext=(min_idx, min_val - 10),
+            arrowprops=dict(facecolor='red', shrink=0.05), fontsize=10, color='red')
+
+max_val = y_true.max()
+max_idx = forecast_index[y_true.argmax()]
+ax.annotate(f"Max: {max_val:.2f}", xy=(max_idx, max_val), xytext=(max_idx, max_val + 10),
+            arrowprops=dict(facecolor='green', shrink=0.05), fontsize=10, color='green')
+
+# === Titles and Labels ===
+ax.set_title(f"TFT Forecast vs. True - Full Signal View ({target_stock})", fontsize=14)
+ax.set_xlabel("Date")
+ax.set_ylabel("Target Value")
+ax.grid(True)
+
+# === Horizontal Legend at Bottom ===
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, fontsize=10)
+plt.tight_layout()
+plt.show()
+
+
+
+import matplotlib.pyplot as plt
+from pandas import Timestamp
+
+# === Step 1: Set start of plot range for history context ===
+plot_start = Timestamp("2018-01-01")
+raw_target_slice = raw_target.slice(plot_start, raw_target.end_time())
+full_target_index = raw_target_slice.time_index
+full_target_vals = raw_target_slice.values().squeeze()
+
+# === Step 2: Extract forecast and truth values from forecast_df ===
+forecast_index = forecast_df.index
+y_true = forecast_df["true"].astype(float).values
+y_p10 = forecast_df["p10"].astype(float).values
+y_p50 = forecast_df["p50"].astype(float).values
+y_p90 = forecast_df["p90"].astype(float).values
+y_point = forecast_df["point_forecast"].astype(float).values
+
+# === Step 3: Define split markers ===
+train_end = train_target_raw.end_time()
+val_end = val_target_raw.end_time()
+test_start = forecast_index[0]
+
+# === Step 4: Begin plot ===
+fig, ax = plt.subplots(figsize=(14, 7))
+
+# Plot full historical target
+ax.plot(full_target_index, full_target_vals, label="Historical Target", color="black", linewidth=2)
+
+# Plot true values in test set
+ax.plot(forecast_index, y_true, label="True (Test)", color="blue", linewidth=2)
+
+# Plot forecasts
+ax.plot(forecast_index, y_p50, label="Forecast Median (p50)", color="magenta", linewidth=2)
+ax.plot(forecast_index, y_p10, label="Forecast Lower (p10)", linestyle="--", color="skyblue")
+ax.plot(forecast_index, y_p90, label="Forecast Upper (p90)", linestyle="--", color="green")
+ax.plot(forecast_index, y_point, label="Forecast Point", linestyle=":", color="orange")
+
+# Confidence interval shading
+ax.fill_between(forecast_index, y_p10, y_p90, color="lightgray", alpha=0.4, label="Confidence Interval (p10–p90)")
+
+# Add vertical markers
+ax.axvline(train_end, color="gray", linestyle="--", linewidth=1.5, label="Train End")
+ax.axvline(val_end, color="purple", linestyle="--", linewidth=1.5, label="Validation End")
+ax.axvline(test_start, color="red", linestyle="--", linewidth=2, label="Forecast Start")
+
+# === Annotations for Min/Max in Test Predictions ===
+min_val = y_true.min()
+min_idx = forecast_index[y_true.argmin()]
+ax.annotate(f"Min: {min_val:.2f}", xy=(min_idx, min_val), xytext=(min_idx, min_val - 10),
+            arrowprops=dict(facecolor='red', shrink=0.05), fontsize=10, color='red')
+
+max_val = y_true.max()
+max_idx = forecast_index[y_true.argmax()]
+ax.annotate(f"Max: {max_val:.2f}", xy=(max_idx, max_val), xytext=(max_idx, max_val + 10),
+            arrowprops=dict(facecolor='green', shrink=0.05), fontsize=10, color='green')
+
+# === Titles and Labels ===
+ax.set_title(f"TFT Forecast vs. True - Full Signal View ({target_stock})", fontsize=14)
+ax.set_xlabel("Date")
+ax.set_ylabel("Target Value")
+ax.grid(True)
+
+# === Horizontal Legend at Bottom ===
+ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3, fontsize=10)
+plt.tight_layout()
+plt.show()
+
+
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+# === Step 1: Aggregate Metrics ===
+avg_metrics = {
+    'R² (Point)': forecast_df['r2_point'].mean(),
+    'R² (p50)': forecast_df['r2_p50'].mean(),
+    'MAE (Point)': forecast_df['mae_point'].mean(),
+    'MAE (p50)': forecast_df['mae_p50'].mean(),
+    'Pinball (p10)': forecast_df['pinball_p10'].mean(),
+    'Pinball (p50)': forecast_df['pinball_p50'].mean(),
+    'Pinball (p90)': forecast_df['pinball_p90'].mean(),
+    'Interval Covered (80%)': forecast_df['interval_covered_80'].mean(),
+}
+
+# === Step 2: Plot ===
+plt.figure(figsize=(12, 6))
+colors = ['orange', 'orange', 'blue', 'blue', 'green', 'green', 'green', 'purple']
+bars = plt.bar(avg_metrics.keys(), avg_metrics.values(), color=colors)
+
+# Annotate values on bars
+for bar in bars:
+    height = bar.get_height()
+    plt.annotate(f'{height:.3f}', xy=(bar.get_x() + bar.get_width() / 2, height),
+                 xytext=(0, 5), textcoords='offset points', ha='center', fontsize=9)
+
+# Style
+plt.title(f"Average Forecast Metrics (Point, Quantiles, Interval) - ({target_stock})", fontsize=14)
+plt.ylabel("Metric Value")
+plt.xticks(rotation=45)
+plt.grid(axis='y', linestyle='--', alpha=0.6)
+plt.tight_layout()
+plt.show()
+
+
+
+import matplotlib.pyplot as plt
+
+# === Step 1: Extract relevant series ===
+dates = forecast_df.index
+mae_p50 = forecast_df["mae_p50"]
+pinball_p10 = forecast_df["pinball_p10"]
+pinball_p50 = forecast_df["pinball_p50"]
+pinball_p90 = forecast_df["pinball_p90"]
+interval_covered_80 = forecast_df["interval_covered_80"]
+
+# === Step 2: Subplots layout ===
+fig, axs = plt.subplots(nrows=3, ncols=1, figsize=(14, 10), sharex=True)
+
+# --- Plot 1: MAE (p50) ---
+axs[0].plot(dates, mae_p50, label="MAE (p50)", color='green', linewidth=2)
+axs[0].set_ylabel("MAE")
+axs[0].set_title(f"Mean Absolute Error for Median Forecast (p50)  --  ({target_stock})")
+axs[0].grid(True)
+axs[0].legend(loc='upper right')
+
+# --- Plot 2: Pinball Losses ---
+axs[1].plot(dates, pinball_p10, label="Pinball Loss (p10)", color='skyblue', linewidth=2)
+axs[1].plot(dates, pinball_p50, label="Pinball Loss (p50)", color='purple', linewidth=2)
+axs[1].plot(dates, pinball_p90, label="Pinball Loss (p90)", color='brown', linewidth=2)
+axs[1].set_ylabel("Pinball Loss")
+axs[1].set_title(f"Pinball Loss for Quantile Forecasts -- ({target_stock})")
+axs[1].grid(True)
+axs[1].legend(loc='upper right')
+
+# --- Plot 3: Interval Coverage ---
+axs[2].plot(dates, interval_covered_80, label="Interval Covered (80%)", color='black', linestyle='--', linewidth=2)
+axs[2].set_ylabel("Coverage")
+axs[2].set_title(f"80% Prediction Interval Coverage -- ({target_stock})")
+axs[2].set_xlabel("Date")
+axs[2].grid(True)
+axs[2].legend(loc='upper right')
+
+# === Final layout ===
+plt.tight_layout()
+plt.show()
