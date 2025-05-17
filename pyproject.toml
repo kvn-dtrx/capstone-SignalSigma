@@ -20,6 +20,8 @@ dependencies = [
   "darts==0.35.0",
   # Python API for Federal Reserve Economic Data (FRED) from St. Louis Fed
   "fredapi==0.5.2",
+  # Quickly rewrite git repository history.
+  "git-filter-repo==2.47.0",
   # Open World Holidays Framework
   "holidays==0.71",
   # IPython Kernel for Jupyter
