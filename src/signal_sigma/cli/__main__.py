@@ -11,7 +11,8 @@ def run_streamlit(_args) -> None:
     streamlit_path = os.path.join(
         cfg.SRC_PATH,
         "signal_sigma",
-        "streamlit_forecast_app.py",
+        "cli",
+        "app.py",
     )
     try:
         print("🚀 Launching the Streamlit app...")

@@ -8,13 +8,13 @@
 # ===============================
 import signal_sigma.config.cfg as cfg
 
-from signal_sigma.data_gathering import DataGathering                  # Fetch stock & Yahoo macro data
-from signal_sigma.data_preparator import DataPreparator            # Prepare dataset for modeling
-from signal_sigma.feature_engineering import FeatureEngineering           # Generate technical indicators
-from signal_sigma.fred_macro import FredMacroProcessor                    # Download & compress FRED macroeconomic indicators
-from signal_sigma.market_macro_compressor import MarketMacroCompressor      # Compress Yahoo macroeconomic signals
-from signal_sigma.data_engineering_pipeline import DataEngineeringPipeline   # Main Class 
-from signal_sigma.loss_history import LossHistory                            # Loss function for the model 
+from signal_sigma.core.data_gathering import DataGathering                  # Fetch stock & Yahoo macro data
+from signal_sigma.core.data_preparator import DataPreparator            # Prepare dataset for modeling
+from signal_sigma.core.feature_engineering import FeatureEngineering           # Generate technical indicators
+from signal_sigma.core.fred_macro import FredMacroProcessor                    # Download & compress FRED macroeconomic indicators
+from signal_sigma.core.market_macro_compressor import MarketMacroCompressor      # Compress Yahoo macroeconomic signals
+from signal_sigma.core.data_engineering_pipeline import DataEngineeringPipeline   # Main Class 
+from signal_sigma.core.loss_history import LossHistory                            # Loss function for the model 
 
 # ===============================
 # 🧪 Core Python Libraries
@@ -263,7 +263,7 @@ print(f"[INFO] Test Covariates      : {test_covariates.time_index.min()} → {te
 # -------------------------------------------------------------------------------------
  
 # Initialize the Temporal Fusion Transformer (TFT) model from Darts
-from signal_sigma.loss_history import LossHistory
+from signal_sigma.core.loss_history import LossHistory
 loss_logger = LossHistory()                 # Instantiate the callback
 model = TFTModel(
     input_chunk_length=input_len,          # 🔁 Number of historical time steps used as input

@@ -4,12 +4,12 @@
 
 from typing import List
 import signal_sigma.config.cfg as cfg
-from signal_sigma.data_gathering import DataGathering
-from signal_sigma.data_preparator import DataPreparator
-from signal_sigma.fred_macro import FredMacroProcessor
-from signal_sigma.market_macro_compressor import MarketMacroCompressor
-from signal_sigma.temporal_feature_combiner import TemporalFeatureCombiner
-from signal_sigma.features_selection import ReducedFeatureSelector
+from signal_sigma.core.data_gathering import DataGathering
+from signal_sigma.core.data_preparator import DataPreparator
+from signal_sigma.core.fred_macro import FredMacroProcessor
+from signal_sigma.core.market_macro_compressor import MarketMacroCompressor
+from signal_sigma.core.temporal_feature_combiner import TemporalFeatureCombiner
+from signal_sigma.core.features_selection import ReducedFeatureSelector
 
 
 class DataEngineeringPipeline:
