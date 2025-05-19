@@ -13,7 +13,13 @@ def run_streamlit(_args) -> None:
         "signal_sigma",
         "streamlit_forecast_app.py",
     )
-    subprocess.run(["streamlit", "run", streamlit_path])
+    try:
+        print("🚀 Launching the Streamlit app...")
+        subprocess.run(["streamlit", "run", streamlit_path], check=True)
+    except KeyboardInterrupt:
+        print("\n⛔ Streamlit app gracefully stopped.")
+    except subprocess.CalledProcessError as e:
+        print(f"\n⚠️ Streamlit encountered an error: {e}")
 
 
 def run_forecast(_args) -> None:
