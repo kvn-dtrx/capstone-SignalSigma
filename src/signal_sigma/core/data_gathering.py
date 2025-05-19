@@ -50,7 +50,7 @@ class DataGathering:
         macro_tickers,
         start_date="2014-01-01",
         end_date=None,
-        save_path=os.path.join(cfg.DATA_PATH, "Stock_market_data"),
+        save_path=os.path.join(cfg.DATA_PATH, "stock_market_data"),
         filename="clean_stock_data_with_time_index.csv",
     ):
         self.stock_tickers = stock_tickers

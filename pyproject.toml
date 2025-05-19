@@ -86,6 +86,7 @@ dev = [
 [project.scripts]
 signal-sigma = "signal_sigma.cli.__main__:main"
 sisi = "signal_sigma.cli.__main__:main"
+sisi-forecast = "signal_sigma.core.__main__:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

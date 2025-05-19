@@ -6,18 +6,19 @@ import streamlit as st
 import pandas as pd
 import plotly.graph_objects as go
 import os
-from pandas import Timestamp
+
+# from pandas import Timestamp
 import signal_sigma.config.cfg as cfg
 import plotly.express as px
 
 
 # === Page config ===
-st.set_page_config(layout="wide", page_title="Stock Forecast Visualizer")
+st.set_page_config(layout="wide", page_title="Signal Sigma - Stock Forecasting")
 
 # === Configuration ===
 start_date = "2014-01-01"
 end_date = "2025-05-17"
-path_stock = os.path.join(cfg.DATA_PATH, "Stock_market_data")
+path_stock = os.path.join(cfg.DATA_PATH, "stock_market_data")
 
 # === Metric Explanations ===
 metric_explanations = {
@@ -80,11 +81,34 @@ plot_mode = st.sidebar.radio(
 )
 # plot_mode = st.sidebar.radio("Select Plot Type", ["Forecast", "Daily Metric", "Summary Metrics"])
 
+
 # === Load Data ===
-forecast_path = (
-    f"{path_stock}/{stock}_forecast_eval_metrics_{start_date}_{end_date}.csv"
-)
-raw_path = f"{path_stock}/{stock}_reduced_dataset_{start_date}_{end_date}.csv"
+
+# XXX: Ugly hack in order to not guess the date range
+forecast_filenames_guessed = [
+    f for f in os.listdir(path_stock) if f.startswith(f"{stock}_forecast_eval_metrics_")
+]
+
+try:
+    forecast_filename = forecast_filenames_guessed[0]
+except IndexError:
+    forecast_filename = ""
+
+raw_filenames_guessed = [
+    f for f in os.listdir(path_stock) if f.startswith(f"{stock}_reduced_dataset_")
+]
+
+try:
+    raw_filename = raw_filenames_guessed[0]
+except IndexError:
+    raw_filename = ""
+
+# # XXX: Please uncomment the following lines when you have a better way to guess the date range
+# forecast_filename = f"{stock}_forecast_eval_metrics_{start_date}_{end_date}.csv"
+# raw_filename = f"{stock}_reduced_dataset_{start_date}_{end_date}.csv"
+
+forecast_path = os.path.join(path_stock, forecast_filename)
+raw_path = os.path.join(path_stock, raw_filename)
 
 if not (os.path.exists(forecast_path) and os.path.exists(raw_path)):
     st.error(
@@ -92,7 +116,12 @@ if not (os.path.exists(forecast_path) and os.path.exists(raw_path)):
     )
     st.stop()
 
-raw_df = pd.read_csv(raw_path, parse_dates=["date"], index_col="date").sort_index()
+raw_df = pd.read_csv(
+    raw_path,
+    parse_dates=["date"],
+    index_col="date",
+).sort_index()
+
 forecast_df = pd.read_csv(
     forecast_path, parse_dates=["date"], index_col="date"
 ).sort_index()
@@ -212,7 +241,23 @@ elif plot_mode == "All Stocks Actual":
     st.markdown("### 📊 All Stocks: Actual Price Trends")
     stock_data = {}
     for label, symbol in stock_options.items():
-        path = f"{path_stock}/{symbol}_reduced_dataset_{start_date}_{end_date}.csv"
+
+        # XXX: Ugly hack in order to not guess the date range
+        filenames_guessed = [
+            f
+            for f in os.listdir(path_stock)
+            if f.startswith(f"{symbol}_reduced_dataset_")
+        ]
+
+        try:
+            filename = filenames_guessed[0]
+        except IndexError:
+            filename = ""
+        path = os.path.join(path_stock, filename)
+
+        # # XXX: Please uncomment the following lines when you have a better way to guess the date range
+        # path = f"{path_stock}/{symbol}_reduced_dataset_{start_date}_{end_date}.csv"
+
         if os.path.exists(path):
             df = pd.read_csv(path, parse_dates=["date"])
             df["Stock"] = label

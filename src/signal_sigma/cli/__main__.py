@@ -3,7 +3,7 @@ import subprocess
 import argparse
 
 # TODO: Replace this with main as soon as possible
-import signal_sigma.core.main_wrap as sisi
+import signal_sigma.core.__main__ as sisi
 import signal_sigma.config.cfg as cfg
 
 
