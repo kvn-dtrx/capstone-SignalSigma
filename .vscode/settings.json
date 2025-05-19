@@ -40,6 +40,7 @@
     "RMSE",
     "scikit",
     "setuptools",
+    "sisi",
     "statsmodels",
     "streamlit",
     "tensorflow",
