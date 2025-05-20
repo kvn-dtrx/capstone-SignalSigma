@@ -3,7 +3,7 @@ import subprocess
 import argparse
 
 # TODO: Replace this with main as soon as possible
-import signal_sigma.core.main_wrap as sisi
+import signal_sigma.core.__main__ as sisi
 import signal_sigma.config.cfg as cfg
 
 
@@ -11,9 +11,16 @@ def run_streamlit(_args) -> None:
     streamlit_path = os.path.join(
         cfg.SRC_PATH,
         "signal_sigma",
-        "streamlit_forecast_app.py",
+        "cli",
+        "app.py",
     )
-    subprocess.run(["streamlit", "run", streamlit_path])
+    try:
+        print("🚀 Launching the Streamlit app...")
+        subprocess.run(["streamlit", "run", streamlit_path], check=True)
+    except KeyboardInterrupt:
+        print("\n⛔ Streamlit app gracefully stopped.")
+    except subprocess.CalledProcessError as e:
+        print(f"\n⚠️ Streamlit encountered an error: {e}")
 
 
 def run_forecast(_args) -> None:

@@ -93,12 +93,17 @@ If you prefer a more verbose binary identifier, you can also use `signal-sigma` 
 ### Examples
 
 ``` shell
-# Start Streamlit Frontend.
-sisi 
+# Creates and writes forecast data frames for NVDA
+# with re-run of pipeline.
+sisi-forecast -r -t NVDA
 
-# Create and write forecast data frames for Apple and Tesla.
-sisi forecast --tickers=AAPL,TSLA 
+# Creates and writes forecast data frames for a variety of stocks.
+for ticker in AAPL AMZN GOOGL META MSFT NVDA TSLA; do 
+  sisi-forecast -t "${ticker}"
+done
+
+# Starts Streamlit frontend.
+sisi 
 ```
-<!-- Not implemented yet! -->
 
 ---

@@ -2,14 +2,15 @@
 # description: Provides a data engineering pipeline for stock and macroeconomic data.
 # ---
 
+import os
 from typing import List
 import signal_sigma.config.cfg as cfg
-from signal_sigma.data_gathering import DataGathering
-from signal_sigma.data_preparator import DataPreparator
-from signal_sigma.fred_macro import FredMacroProcessor
-from signal_sigma.market_macro_compressor import MarketMacroCompressor
-from signal_sigma.temporal_feature_combiner import TemporalFeatureCombiner
-from signal_sigma.features_selection import ReducedFeatureSelector
+from signal_sigma.core.data_gathering import DataGathering
+from signal_sigma.core.data_preparator import DataPreparator
+from signal_sigma.core.fred_macro import FredMacroProcessor
+from signal_sigma.core.market_macro_compressor import MarketMacroCompressor
+from signal_sigma.core.temporal_feature_combiner import TemporalFeatureCombiner
+from signal_sigma.core.features_selection import ReducedFeatureSelector
 
 
 class DataEngineeringPipeline:
@@ -42,6 +43,9 @@ class DataEngineeringPipeline:
             start_date=self.start_date,
             end_date=self.end_date,
         )
+
+        os.makedirs(self.path_stock, exist_ok=True)
+
         raw_data_stock_yahoo = gatherer.run()
         raw_data_stock_yahoo.index.name = "date"
         raw_data_stock_yahoo.to_csv(
@@ -124,7 +128,7 @@ class DataEngineeringPipeline:
                 "high_",
                 "volume_",
             )
-            
+
             cols_to_drop = [
                 col
                 for col in model_dataset_combined.columns

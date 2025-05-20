@@ -4,7 +4,7 @@
 
 import os
 import pandas as pd
-from signal_sigma.feature_engineering import FeatureEngineering
+from signal_sigma.core.feature_engineering import FeatureEngineering
 
 
 class DataPreparator:

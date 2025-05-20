@@ -34,6 +34,7 @@ def join_with_root(*tokens: str, root: str = ROOT_PATH) -> str:
 DATA_PATH = join_with_root("data")
 PLOTS_PATH = join_with_root("plots")
 LOGS_PATH = join_with_root("logs")
+SRC_PATH = join_with_root("src")
 
 # ---
 
