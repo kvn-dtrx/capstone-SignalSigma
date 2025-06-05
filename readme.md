@@ -1,7 +1,4 @@
-# ⟡⟡⟡ Signal Sigma ⟡⟡⟡
-
-> *Markets can remain irrational longer than you can remain solvent.*  
-> —  John Maynard Keynes *(falsely attributed — with probability bordering on certainty)*
+# Signal Sigma
 
 ## Table of Contents
 
@@ -9,12 +6,8 @@
 - [Table of Contents](#table-of-contents)
 - [Synopsis](#synopsis)
 - [Installation](#installation)
-    - [Requirements](#requirements)
-    - [Setup](#setup)
-    - [Clean-Up](#clean-up)
 - [Usage](#usage)
-    - [Subcommands](#subcommands)
-    - [Examples](#examples)
+- [Colophon](#colophon)
 
 ## <a name="disclaimer"></a>Disclaimer<small><sup>[↩](#table-of-contents)</sup></small>
 
@@ -106,4 +99,10 @@ done
 sisi 
 ```
 
----
+## Colophon
+
+**Authors:** [julialoeschel](https://github.com/julialoeschel), [payamoghtanem](https://github.com/payamoghtanem), [Benas67](https://github.com/Benas67), [kvn-dtrx](https://github.com/kvn-dtrx)
+
+**Template:** This repository was created from the [Neue Fische DS Capstone Project Template](https://github.com/neuefische/ds-capstone-project-template).
+
+**License:** [MIT License](licence.txt)

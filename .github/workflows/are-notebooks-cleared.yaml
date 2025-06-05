@@ -8,7 +8,7 @@ on:
 
 jobs:
   are-notebooks-cleared:
-    uses: kvn-dtrx/git-hub-automatisation/.github/workflows/are_notebooks_cleared.yaml@main
+    uses: kvn-dtrx/git-hub-automatisation/.github/workflows/are-notebooks-cleared.yaml@main
     with:
       base_sha: ${{ github.event.pull_request.base.sha }}
       head_sha: ${{ github.event.pull_request.head.sha }}

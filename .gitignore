@@ -1,3 +1,5 @@
+# From template
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -131,13 +133,18 @@ dmypy.json
 #config file has sensitive data
 .mlflow_uri
 
+# ---
+
+# Project-specific
+
 # Custom files and folders
-data/
-models/
+data/*
+!data/.gitkeep
+models/*
+!models/.gitkeep
 mlruns/
 node_modules/
 **/logs/
 # lightning, darts logs
 # As soon as log directory are set, this should be removed
 **/*_logs/
-
