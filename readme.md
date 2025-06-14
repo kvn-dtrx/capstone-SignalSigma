@@ -1,4 +1,4 @@
-# Signal Sigma
+# DS Capstone Project: Signal Sigma
 
 ## Table of Contents
 
