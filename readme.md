@@ -105,4 +105,4 @@ sisi
 
 **Template:** This repository was created from the [Neue Fische DS Capstone Project Template](https://github.com/neuefische/ds-capstone-project-template).
 
-**License:** [MIT License](licence.txt)
+**License:** [MIT License](license.txt)
